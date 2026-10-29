@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Level Submission Status — Retro 2D Game Engine</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <header class="top-nav">
+      <div>
+        <div class="brand-title">🕹️ Level Submission Status Tracker</div>
+        <div class="brand-subtitle">Check approval status or moderation notes for your submitted level</div>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/" class="btn btn-secondary" style="text-decoration: none;">
+          🏠 Home
+        </a>
+        <a href="/creator.html" class="btn btn-secondary" style="text-decoration: none;">
+          + Create Another Level
+        </a>
+      </div>
+    </header>
+
+    <main class="status-container">
+      <div id="status-loading" class="panel">Loading level submission status...</div>
+      <div id="status-error" class="feedback-banner error" hidden></div>
+
+      <section id="status-content" class="panel" hidden>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <h1 id="status-level-name" style="font-size: 1.5rem; color: var(--accent-primary);"></h1>
+            <p id="status-level-desc" style="color: var(--text-muted); margin-top: 0.25rem;"></p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span id="status-badge" class="status-pill"></span>
+            <button type="button" id="btn-refresh-status" class="btn btn-secondary">
+              ↻ Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="stats-bar" style="margin-bottom: 1.2rem;">
+          <div class="stat-chip"><strong>Creator:</strong> <span id="status-level-username"></span></div>
+          <div class="stat-chip"><strong>Country:</strong> <span id="status-level-country"></span></div>
+          <div class="stat-chip"><strong>Submitted:</strong> <span id="status-submitted-at"></span></div>
+        </div>
+
+        <div id="decline-reason-box" class="feedback-banner error" hidden>
+          <strong>Admin Decline Reason:</strong> <span id="decline-reason-text"></span>
+        </div>
+
+        <h2 class="panel-title">Submitted Level Preview</h2>
+        <div class="canvas-scroll-viewport">
+          <canvas id="status-canvas"></canvas>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/js/status.js"></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "retro-2d-game-engine",
+  "version": "1.0.0",
+  "description": "Retro 2D platformer level creator and game engine",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3",
+    "winston": "^3.13.1",
+    "winston-transport": "^4.7.0"
+  }
+}

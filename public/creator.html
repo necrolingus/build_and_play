@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Retro 2D Level Creator — SNES &amp; GameBoy Engine</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <header class="top-nav">
+      <div>
+        <div class="brand-title">🕹️ Retro 2D Level Creator</div>
+        <div class="brand-subtitle">
+          Parameterized Multi-Tile Platform Generator • 7 Color Palettes • Guaranteed Reachability
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/" class="btn btn-secondary" style="text-decoration: none;">
+          🏠 Home
+        </a>
+        <a href="/play.html" class="btn btn-primary" style="text-decoration: none;">
+          🎮 Select Level &amp; Play
+        </a>
+        <a href="/admin.html" class="btn btn-secondary" style="text-decoration: none;">
+          🛡️ Admin
+        </a>
+      </div>
+    </header>
+
+    <main class="workspace-layout">
+      <!-- Left Column: Parameter Sliders & Palette Picker -->
+      <section class="panel">
+        <h2 class="panel-title">1. Choose Retro Color Palette (7 Palettes)</h2>
+        <div id="palette-swatches" class="palette-grid"></div>
+
+        <h2 class="panel-title">2. Level Generator Parameters</h2>
+        <div id="sliders-container"></div>
+
+        <div class="gift-ratio-box">
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+            Calculated Lucky-Dip Block Drop Probabilities:
+          </div>
+          <div id="gift-ratio-bar"></div>
+        </div>
+      </section>
+
+      <!-- Right Column: Live Canvas Preview & Submission Form -->
+      <div class="preview-column">
+        <section class="panel">
+          <div class="canvas-toolbar">
+            <div class="seed-controls">
+              <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">
+                3. Live Level Blueprint Preview
+              </h2>
+              <span id="seed-display" class="seed-tag">Seed #------</span>
+              <button type="button" id="btn-regenerate" class="btn btn-secondary">
+                🎲 Regenerate Layout
+              </button>
+            </div>
+
+            <div class="toggle-group">
+              <label>
+                <input type="checkbox" id="toggle-grid" checked />
+                16×16 Tile Grid
+              </label>
+              <label>
+                <input type="checkbox" id="toggle-screens" checked />
+                Screen Dividers
+              </label>
+              <label>
+                <input type="checkbox" id="toggle-gifts" checked />
+                Lucky-Dip Gift Tags
+              </label>
+            </div>
+          </div>
+
+          <div id="feedback-banner" class="feedback-banner" hidden></div>
+
+          <div class="canvas-scroll-viewport">
+            <canvas id="level-canvas"></canvas>
+          </div>
+
+          <div id="level-stats" class="stats-bar"></div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">4. Submit Level to Community Queue</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            No account or login required! Once submitted, your level enters the admin moderation queue and you will receive a unique tracking link.
+          </p>
+
+          <form id="submit-level-form">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="level-name">Level Name (3–40 chars) *</label>
+                <input
+                  type="text"
+                  id="level-name"
+                  required
+                  placeholder="e.g., Sunset Fortress Run"
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="creator-username">Your Username (Optional — defaults to Anonymous)</label>
+                <input
+                  type="text"
+                  id="creator-username"
+                  placeholder="Anonymous"
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="creator-country">Your Country (Optional)</label>
+                <select id="creator-country"></select>
+              </div>
+
+              <div class="form-field full-width">
+                <label for="level-description">Short Description (3–200 chars) *</label>
+                <textarea
+                  id="level-description"
+                  rows="2"
+                  required
+                  placeholder="Describe your level's vibe, platforming style, or lucky-dip surprises..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div id="turnstile-wrapper" style="margin-bottom: 1rem;" hidden>
+              <div id="turnstile-widget"></div>
+            </div>
+
+            <button type="submit" id="btn-submit-level" class="btn btn-primary">
+              🚀 Submit Level for Admin Approval
+            </button>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <!-- Unique Submission Status Link Modal -->
+    <div id="submission-modal" class="modal-backdrop" hidden>
+      <div class="modal-card">
+        <h2 class="panel-title">🎉 Level Queued for Approval!</h2>
+        <p style="font-size: 0.92rem; color: var(--text-main);">
+          Your level has been saved and queued for admin review. Bookmark or copy your unique link below to check when your level is approved (or if it was declined with a reason):
+        </p>
+
+        <div class="unique-link-box">
+          <a id="unique-status-link" href="#" target="_blank" rel="noopener"></a>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+          <button type="button" id="btn-copy-link" class="btn btn-secondary">
+            Copy Unique Link
+          </button>
+          <button type="button" id="btn-close-modal" class="btn btn-primary">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/js/creator.js"></script>
+  </body>
+</html>

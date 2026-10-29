@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Build &amp; Play — Retro 2D Platformer Game Engine</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <header class="top-nav">
+      <div>
+        <div class="brand-title">🕹️ Build &amp; Play Retro 2D Engine</div>
+        <div class="brand-subtitle">
+          Old-School SNES &amp; GameBoy Style Platformer • Community Built Levels • Open to All
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/admin.html" class="btn btn-secondary" style="text-decoration: none;">
+          🛡️ Admin
+        </a>
+      </div>
+    </header>
+
+    <main class="landing-container">
+      <!-- Hero Welcome Banner with the 2 Main Action Buttons -->
+      <section class="panel hero-welcome-panel">
+        <div class="hero-copy">
+          <span class="retro-tag">WELCOME TO THE ARCADE</span>
+          <h1 class="hero-headline">Jump, Bump &amp; Conquer Community-Built 2D Worlds!</h1>
+          <p class="hero-description">
+            Every level is built from retro multi-tile textures across 7 classic color palettes.
+            Bump glowing Mystery Blocks from below, the side, or bounce on top for a lucky-dip gift:
+            <strong>Coins</strong>, <strong>Extra Lives (1-UP)</strong>, or <strong>5-Second 2× Giant Invincibility</strong>!
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="/play.html" class="btn btn-primary btn-large">
+              🎮 Select Level &amp; Play
+            </a>
+            <a href="/creator.html" class="btn btn-secondary btn-large">
+              🛠️ Build Your Own Level
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Static Prebuilt Level Showcase on Homepage -->
+      <section class="panel" style="margin-top: 1.5rem;">
+        <div class="canvas-toolbar">
+          <div>
+            <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">
+              🌟 Featured Prebuilt Level Showcase — "SNES Sunset Citadel"
+            </h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+              A preview of our multi-tile engine featuring stepped ground hills, 4 vibrant flower types, 3 spike varieties, patrolling beetles, and bumpable Lucky-Dip blocks.
+            </p>
+          </div>
+        </div>
+
+        <div class="canvas-scroll-viewport">
+          <canvas id="home-showcase-canvas"></canvas>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/js/home.js"></script>
+  </body>
+</html>

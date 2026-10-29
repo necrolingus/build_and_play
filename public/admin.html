@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Moderation Queue — Retro 2D Game Engine</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <header class="top-nav">
+      <div>
+        <div class="brand-title">🛡️ Admin Level Moderation Console</div>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/" class="btn btn-secondary" style="text-decoration: none;">
+          🏠 Home
+        </a>
+        <a href="/creator.html" class="btn btn-secondary" style="text-decoration: none;">
+          🛠️ Level Creator
+        </a>
+        <button type="button" id="btn-admin-logout" class="btn btn-danger" hidden>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Login View (Static API Key from .env) -->
+    <section id="admin-login-view" class="admin-login-wrapper">
+      <div class="panel">
+        <h2 class="panel-title">🔑 Admin Authentication</h2>
+
+        <div id="login-error" class="feedback-banner error" hidden></div>
+
+        <form id="admin-login-form">
+          <div class="form-field" style="margin-bottom: 1rem;">
+            <label for="admin-api-key-input">Admin API Key *</label>
+            <input
+              type="password"
+              id="admin-api-key-input"
+              required
+              placeholder="Enter ADMIN_API_KEY..."
+              autocomplete="off"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            Unlock Admin Queue
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Authenticated Admin Workspace -->
+    <main id="admin-workspace" class="workspace-layout" hidden>
+      <!-- Left Column: Filter Tabs & Submission Queue List -->
+      <section class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">Moderation Queue</h2>
+          <button type="button" id="btn-refresh-queue" class="btn btn-secondary" style="padding: 0.35rem 0.7rem; font-size: 0.75rem;">
+            ↻ Refresh
+          </button>
+        </div>
+
+        <div class="admin-tabs">
+          <button type="button" class="admin-tab-btn active" data-status="PENDING">
+            Pending (<span id="count-pending">0</span>)
+          </button>
+          <button type="button" class="admin-tab-btn" data-status="APPROVED">
+            Approved (<span id="count-approved">0</span>)
+          </button>
+          <button type="button" class="admin-tab-btn" data-status="DECLINED">
+            Declined (<span id="count-declined">0</span>)
+          </button>
+          <button type="button" class="admin-tab-btn" data-status="ALL">
+            All (<span id="count-all">0</span>)
+          </button>
+        </div>
+
+        <div id="queue-list" class="queue-list"></div>
+      </section>
+
+      <!-- Right Column: Selected Level Inspector, Metadata Editor, Canvas Preview & Audit Logs -->
+      <div class="preview-column">
+        <div id="admin-feedback" class="feedback-banner" hidden></div>
+
+        <section id="empty-selection-panel" class="panel">
+          <p style="color: var(--text-muted); text-align: center; padding: 2rem 0;">
+            Select a level from the Moderation Queue on the left to inspect its map, sanitize wording, or approve/decline it.
+          </p>
+        </section>
+
+        <section id="level-inspector-panel" class="panel" hidden>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">
+                Inspecting Level #<span id="inspect-id"></span>
+              </h2>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">
+                Creator Status Link:
+                <a id="inspect-status-link" href="#" target="_blank" rel="noopener" style="color: var(--accent-secondary);"></a>
+              </div>
+            </div>
+            <span id="inspect-status-badge" class="status-pill"></span>
+          </div>
+
+          <!-- Editable Metadata Form (NSFW Wording Sanitization + Moderation Decision) -->
+          <form id="moderation-form">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="edit-level-name">Level Name (Editable for NSFW Filtering) *</label>
+                <input type="text" id="edit-level-name" required minlength="3" maxlength="40" />
+              </div>
+
+              <div class="form-field">
+                <label for="edit-level-username">Creator Username (Editable for NSFW Filtering)</label>
+                <input type="text" id="edit-level-username" maxlength="30" placeholder="Anonymous" />
+              </div>
+
+              <div class="form-field full-width">
+                <label for="edit-level-desc">Level Description (Editable for NSFW Filtering) *</label>
+                <textarea id="edit-level-desc" rows="2" required minlength="3" maxlength="200"></textarea>
+              </div>
+
+              <div class="form-field full-width">
+                <label for="edit-decline-reason">
+                  Decline Reason (Required if declining — shown to creator on their unique status link)
+                </label>
+                <input
+                  type="text"
+                  id="edit-decline-reason"
+                  maxlength="250"
+                  placeholder="e.g., Level description contained inappropriate language or layout was spam."
+                />
+              </div>
+            </div>
+
+            <div class="stats-bar" style="margin-top: 0; margin-bottom: 0.8rem;">
+              <div class="stat-chip"><strong>Country:</strong> <span id="inspect-country"></span></div>
+              <div class="stat-chip"><strong>Submitted:</strong> <span id="inspect-created"></span></div>
+              <div class="stat-chip"><strong>Seed:</strong> <span id="inspect-seed"></span></div>
+            </div>
+
+            <div class="admin-action-bar">
+              <button type="button" id="btn-approve" class="btn btn-success">
+                ✓ Save &amp; Approve Level
+              </button>
+              <button type="button" id="btn-decline" class="btn btn-danger">
+                ✕ Decline with Reason
+              </button>
+              <button type="button" id="btn-save-edits" class="btn btn-secondary">
+                💾 Save Wording Edits Only
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section id="level-preview-panel" class="panel" hidden>
+          <div class="canvas-toolbar">
+            <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">
+              Submitted Level Map Preview
+            </h2>
+            <div class="toggle-group">
+              <label>
+                <input type="checkbox" id="admin-toggle-grid" checked />
+                16×16 Tile Grid
+              </label>
+              <label>
+                <input type="checkbox" id="admin-toggle-screens" checked />
+                Screen Dividers
+              </label>
+              <label>
+                <input type="checkbox" id="admin-toggle-gifts" checked />
+                Lucky-Dip Gift Tags
+              </label>
+            </div>
+          </div>
+
+          <div class="canvas-scroll-viewport">
+            <canvas id="admin-level-canvas"></canvas>
+          </div>
+          <div id="admin-level-stats" class="stats-bar"></div>
+        </section>
+
+        <!-- Winston PostgreSQL Audit Logs -->
+        <section class="panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">
+              📋 Recent PostgreSQL Audit Logs (Winston)
+            </h2>
+            <button type="button" id="btn-refresh-logs" class="btn btn-secondary" style="padding: 0.3rem 0.65rem; font-size: 0.75rem;">
+              ↻ Refresh Logs
+            </button>
+          </div>
+          <div id="admin-logs-box" class="log-list"></div>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="/js/admin.js"></script>
+  </body>
+</html>
