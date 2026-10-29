@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:17.2-alpine3.21
+    container_name: game_postgresql
+    restart: unless-stopped
+    env_file:
+      - .env
+    shm_size: 96mb
+    ports:
+      - "5432:5432"
+    volumes:
+      - game-postgresql:/var/lib/postgresql/data
+    networks:
+      - otherapps
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: ghcr.io/necrolingus/build_and_play:latest
+    container_name: build_and_play
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      # Override localhost from .env so the container resolves the postgres service on the otherapps network
+      POSTGRES_SERVER_IP: postgres
+      POSTGRES_PORT: 5432
+    ports:
+      - "${PORT:-3000}:3000"
+    networks:
+      - otherapps
+
+volumes:
+  reusable-postgresql:
+
+networks:
+  otherapps:
+    external: true
