@@ -2,7 +2,7 @@
 
 A retro 2D platformer game engine and community level builder inspired by classic SNES and GameBoy games. All sprites, tiles, scenery, hazards, and character animations are rendered procedurally on HTML5 Canvas across 7 retro color palettes.
 
-- **Repository**: [https://github.com/necrolingus/game_engine/](https://github.com/necrolingus/game_engine/)
+- **Repository**: [https://github.com/necrolingus/build_and_play/](https://github.com/necrolingus/build_and_play/)
 
 ---
 
