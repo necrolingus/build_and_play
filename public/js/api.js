@@ -100,9 +100,13 @@ export async function fetchLevelStatus(token) {
 /**
  * Admin API helpers (authenticated with X-Admin-Api-Key header)
  */
-export async function verifyAdminKey(apiKey) {
+export async function verifyAdminKey(apiKey, turnstileToken = null) {
+  const headers = { 'X-Admin-Api-Key': apiKey };
+  if (turnstileToken) {
+    headers['X-Turnstile-Token'] = turnstileToken;
+  }
   const res = await fetch('/api/admin/verify', {
-    headers: { 'X-Admin-Api-Key': apiKey }
+    headers
   });
   const data = await res.json();
   if (!res.ok) {

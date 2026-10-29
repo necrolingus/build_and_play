@@ -1,4 +1,5 @@
 import {
+  fetchParameterConfig,
   verifyAdminKey,
   fetchAdminLevels,
   updateAdminLevel,
@@ -13,6 +14,9 @@ const state = {
   activeStatusFilter: 'PENDING',
   levels: [],
   selectedLevel: null,
+  security: null,
+  turnstileToken: null,
+  turnstileWidgetId: null,
   renderOptions: {
     showGrid: true,
     showScreenDividers: true,
@@ -23,8 +27,11 @@ const state = {
 const els = {
   loginView: document.getElementById('admin-login-view'),
   loginForm: document.getElementById('admin-login-form'),
+  loginBtn: document.getElementById('btn-admin-login'),
   apiKeyInput: document.getElementById('admin-api-key-input'),
   loginError: document.getElementById('login-error'),
+  turnstileWrapper: document.getElementById('admin-turnstile-wrapper'),
+  turnstileWidget: document.getElementById('admin-turnstile-widget'),
   logoutBtn: document.getElementById('btn-admin-logout'),
   workspace: document.getElementById('admin-workspace'),
   refreshQueueBtn: document.getElementById('btn-refresh-queue'),
@@ -242,10 +249,57 @@ async function performModerationAction(targetStatus) {
   }
 }
 
+function setupTurnstileIfActive(securityCfg) {
+  if (!securityCfg || !securityCfg.turnstileActive || !securityCfg.turnstileSiteKey) {
+    return;
+  }
+
+  els.turnstileWrapper.hidden = false;
+
+  window.onAdminTurnstileLoadCallback = () => {
+    if (!window.turnstile) return;
+    state.turnstileWidgetId = window.turnstile.render('#admin-turnstile-widget', {
+      sitekey: securityCfg.turnstileSiteKey,
+      theme: 'dark',
+      callback: (token) => {
+        state.turnstileToken = token;
+      },
+      'expired-callback': () => {
+        state.turnstileToken = null;
+      }
+    });
+  };
+
+  const script = document.createElement('script');
+  script.src =
+    'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onAdminTurnstileLoadCallback&render=explicit';
+  script.async = true;
+  script.defer = true;
+  document.head.appendChild(script);
+}
+
+function resetTurnstileWidget() {
+  if (state.security?.turnstileActive && window.turnstile && state.turnstileWidgetId !== null) {
+    state.turnstileToken = null;
+    window.turnstile.reset(state.turnstileWidgetId);
+  }
+}
+
 async function authenticateAndEnter(apiKey) {
+  els.loginError.hidden = true;
+
+  if (state.security?.turnstileActive && !state.turnstileToken) {
+    els.loginError.textContent = 'Please complete the Cloudflare Turnstile security check first.';
+    els.loginError.hidden = false;
+    return;
+  }
+
+  if (els.loginBtn) {
+    els.loginBtn.disabled = true;
+  }
+
   try {
-    els.loginError.hidden = true;
-    const verifyData = await verifyAdminKey(apiKey);
+    const verifyData = await verifyAdminKey(apiKey, state.turnstileToken);
     state.apiKey = apiKey;
     sessionStorage.setItem(STORAGE_KEY, apiKey);
 
@@ -262,10 +316,46 @@ async function authenticateAndEnter(apiKey) {
     els.logoutBtn.hidden = true;
     els.loginError.textContent = err.message;
     els.loginError.hidden = false;
+  } finally {
+    resetTurnstileWidget();
+    if (els.loginBtn) {
+      els.loginBtn.disabled = false;
+    }
   }
 }
 
-function initAdminApp() {
+async function resumeExistingSession(apiKey) {
+  try {
+    els.loginError.hidden = true;
+    const data = await fetchAdminLevels(apiKey, state.activeStatusFilter);
+    state.apiKey = apiKey;
+
+    els.loginView.hidden = true;
+    els.workspace.hidden = false;
+    els.logoutBtn.hidden = false;
+
+    updateCounts(data.counts);
+    state.levels = data.levels || [];
+    selectLevel(state.levels[0] || null);
+    await loadLogs();
+  } catch (err) {
+    sessionStorage.removeItem(STORAGE_KEY);
+    state.apiKey = '';
+    els.loginView.hidden = false;
+    els.workspace.hidden = true;
+    els.logoutBtn.hidden = true;
+  }
+}
+
+async function initAdminApp() {
+  try {
+    const config = await fetchParameterConfig();
+    state.security = config.security || null;
+    setupTurnstileIfActive(state.security);
+  } catch (err) {
+    // Non-fatal if config fails to load; backend still enforces security
+  }
+
   els.loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const key = els.apiKeyInput.value.trim();
@@ -278,6 +368,7 @@ function initAdminApp() {
     state.apiKey = '';
     state.selectedLevel = null;
     els.apiKeyInput.value = '';
+    resetTurnstileWidget();
     els.loginView.hidden = false;
     els.workspace.hidden = true;
     els.logoutBtn.hidden = true;
@@ -327,9 +418,9 @@ function initAdminApp() {
     }
   });
 
-  // Auto-login if session key exists
+  // Auto-resume if session key exists in current browser tab
   if (state.apiKey) {
-    authenticateAndEnter(state.apiKey);
+    resumeExistingSession(state.apiKey);
   }
 }
 

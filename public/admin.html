@@ -42,7 +42,13 @@
               autocomplete="off"
             />
           </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%;">
+
+          <!-- Cloudflare Turnstile Widget (Automatically rendered when active on configured domain) -->
+          <div id="admin-turnstile-wrapper" style="margin-bottom: 1rem;" hidden>
+            <div id="admin-turnstile-widget"></div>
+          </div>
+
+          <button type="submit" id="btn-admin-login" class="btn btn-primary" style="width: 100%;">
             Unlock Admin Queue
           </button>
         </form>

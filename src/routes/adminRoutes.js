@@ -2,41 +2,64 @@ const express = require('express');
 const { requireAdminAuth } = require('../middleware/adminAuth');
 const { Level, AppLog } = require('../models');
 const { validateAdminModeration } = require('../services/validator');
+const { verifyTurnstileIfActive } = require('../services/securityService');
 const { logger } = require('../utils/logger');
-const { getClientIp } = require('../middleware/rateLimiter');
+const { getClientIp, checkAdminRateLimit } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
-// Protect all admin routes with the static API key middleware
-router.use(requireAdminAuth);
-
 /**
  * GET /api/admin/verify
- * Verifies the provided X-Admin-Api-Key and returns summary queue counts.
+ * Verifies Cloudflare Turnstile (when active on the configured domain) and the
+ * provided X-Admin-Api-Key, then returns summary queue counts.
  */
-router.get('/verify', async (req, res) => {
-  try {
-    const [pendingCount, approvedCount, declinedCount] = await Promise.all([
-      Level.count({ where: { status: 'PENDING' } }),
-      Level.count({ where: { status: 'APPROVED' } }),
-      Level.count({ where: { status: 'DECLINED' } })
-    ]);
+router.get(
+  '/verify',
+  async (req, res, next) => {
+    const rateCheck = checkAdminRateLimit(req);
+    if (rateCheck.blocked) {
+      res.set('Retry-After', String(rateCheck.retryAfterSeconds));
+      return res.status(429).json({
+        error: `Too many failed admin login attempts from your IP (${rateCheck.ip}). Try again in ${rateCheck.retryAfterSeconds} seconds.`
+      });
+    }
 
-    logger.info('Admin authenticated and verified session', { ip: getClientIp(req) });
-    return res.json({
-      authenticated: true,
-      counts: {
-        PENDING: pendingCount,
-        APPROVED: approvedCount,
-        DECLINED: declinedCount,
-        ALL: pendingCount + approvedCount + declinedCount
-      }
-    });
-  } catch (err) {
-    logger.error('Failed to verify admin session', { error: err.message });
-    return res.status(500).json({ error: 'Internal server error.' });
+    const turnstileToken = req.headers['x-turnstile-token'];
+    const turnstileResult = await verifyTurnstileIfActive(req, turnstileToken);
+    if (!turnstileResult.valid) {
+      return res.status(403).json({ error: turnstileResult.error });
+    }
+
+    return next();
+  },
+  requireAdminAuth,
+  async (req, res) => {
+    try {
+      const [pendingCount, approvedCount, declinedCount] = await Promise.all([
+        Level.count({ where: { status: 'PENDING' } }),
+        Level.count({ where: { status: 'APPROVED' } }),
+        Level.count({ where: { status: 'DECLINED' } })
+      ]);
+
+      logger.info('Admin authenticated and verified session', { ip: getClientIp(req) });
+      return res.json({
+        authenticated: true,
+        counts: {
+          PENDING: pendingCount,
+          APPROVED: approvedCount,
+          DECLINED: declinedCount,
+          ALL: pendingCount + approvedCount + declinedCount
+        }
+      });
+    } catch (err) {
+      logger.error('Failed to verify admin session', { error: err.message });
+      return res.status(500).json({ error: 'Internal server error.' });
+    }
   }
-});
+);
+
+// Protect all remaining admin routes with the static API key middleware
+router.use(requireAdminAuth);
 
 /**
  * GET /api/admin/levels?status=PENDING|APPROVED|DECLINED|ALL
