@@ -2,6 +2,7 @@
   "name": "retro-2d-game-engine",
   "version": "1.0.0",
   "description": "Retro 2D platformer level creator and game engine",
+  "license": "MIT",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
