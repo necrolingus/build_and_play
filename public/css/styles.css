@@ -1,14 +1,62 @@
+/* ==========================================================================
+   RETRO 2D GAME ENGINE — INDIE PLATFORMER DESIGN SYSTEM
+   --------------------------------------------------------------------------
+   Aesthetic Rationale:
+   - Palette: Polished, modern-retro indie platformer site inspired by SNES-era
+     manuals and contemporary handcrafted games (Celeste, Shovel Knight, Fez).
+     Replaces harsh neon cyan (#00e5ff) and electric yellow (#ffcc00) with warm
+     burnt amber gold (#d4a017), muted artisanal teal (#2a9d8f), deep charcoal
+     ink (#0e1117), and warm off-white cream (#f0ebe3).
+   - Typography:
+     • Display / Headings / Buttons: 'Space Grotesk' — geometric sans with modest
+       retro personality, tight tracking, and confident weights (600–700).
+     • Body text: 'IBM Plex Sans' — humanistic, highly legible technical sans
+       with generous apertures and comfortable line-height (~1.55).
+     • Code / Stats / Seeds / Logs: 'Space Mono' — clean, authentic retro data
+       aesthetic without illegibility.
+   - Surface Treatments: Modestly rounded corners (6px), low-contrast warm slate
+     borders, subtle depth shadows without neon glows, and clear visual hierarchy.
+   - Canvas Protection: Game engine canvas rendering, pixel art tiles, and
+     sprites remain untouched and isolated from UI styling.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
 :root {
-  --bg-dark: #0f111a;
-  --bg-panel: #191c2b;
-  --bg-panel-alt: #21253a;
-  --border-retro: #363d5e;
-  --accent-primary: #ffcc00;
-  --accent-secondary: #00e5ff;
-  --accent-green: #00e676;
-  --accent-danger: #ff4081;
-  --text-main: #f0f4ff;
-  --text-muted: #9aa4c7;
+  /* Surfaces & Backgrounds */
+  --bg-dark: #0e1117;          /* Deep ink / charcoal navy */
+  --bg-panel: #171c24;         /* One step lighter warm panel surface */
+  --bg-panel-alt: #1f2530;     /* Elevated nested surface (cards, tabs, category boxes) */
+  --bg-inset: #11141b;         /* Dark inset surface (inputs, code blocks, viewports) */
+
+  /* Borders & Dividers */
+  --border-retro: #28303d;     /* Subtle warm slate-gray border */
+  --border-subtle: rgba(255, 255, 255, 0.08); /* Low-contrast divider */
+  --border-hover: #384252;     /* Gentle hover state border */
+
+  /* Typography Colors */
+  --text-main: #f0ebe3;        /* Warm off-white / soft cream */
+  --text-muted: #9a948a;       /* Desaturated warm gray (WCAG AA compliant) */
+
+  /* Brand Accents */
+  --accent-primary: #d4a017;       /* Rich amber / warm burnt gold (main CTA) */
+  --accent-primary-hover: #e2ab20; /* Subtle warm highlight on hover */
+  --accent-primary-text: #0e1217;  /* High contrast dark ink on amber button */
+
+  --accent-secondary: #2a9d8f;       /* Muted teal / desaturated cyan */
+  --accent-secondary-hover: #36b0a1; /* Teal hover */
+  --accent-secondary-text: #071413;  /* High contrast dark ink on teal button */
+
+  /* Functional Status Accents */
+  --accent-green: #2ea06c;         /* Refined sage / emerald (success, 1-UP, approved) */
+  --accent-green-hover: #37b77d;
+  --accent-danger: #cc3a52;        /* Warm terracotta rose / crimson (WCAG AA 4.75:1 with white text) */
+  --accent-danger-hover: #db4d64;
+
+  /* Font Stacks */
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Space Mono', 'SF Mono', Consolas, monospace;
 }
 
 * {
@@ -24,39 +72,50 @@
 body {
   background-color: var(--bg-dark);
   color: var(--text-main);
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.55;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ==========================================================================
+   Navigation Bar
+   ========================================================================== */
 .top-nav {
   background: var(--bg-panel);
-  border-bottom: 3px solid var(--accent-primary);
-  padding: 0.9rem 1.8rem;
+  border-bottom: 2px solid var(--accent-primary);
+  padding: 0.85rem 1.75rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
 }
 
 .brand-title {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 1.35rem;
-  font-weight: 800;
-  letter-spacing: 1px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
   color: var(--accent-primary);
-  text-transform: uppercase;
   display: flex;
   align-items: center;
   gap: 0.6rem;
 }
 
 .brand-subtitle {
-  font-size: 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
   color: var(--text-muted);
+  margin-top: 0.15rem;
 }
 
+/* ==========================================================================
+   Workspace Layout & Panels
+   ========================================================================== */
 .workspace-layout {
   display: grid;
   grid-template-columns: 420px minmax(0, 1fr);
@@ -74,25 +133,27 @@ body {
 
 .panel {
   background: var(--bg-panel);
-  border: 2px solid var(--border-retro);
+  border: 1px solid var(--border-retro);
   border-radius: 8px;
   padding: 1.25rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   min-width: 0;
 }
 
 .panel-title {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-display);
   font-size: 1.05rem;
-  color: var(--accent-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  letter-spacing: 0.4px;
   margin-bottom: 1rem;
   padding-bottom: 0.45rem;
-  border-bottom: 1px solid var(--border-retro);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-/* Palette Swatches */
+/* ==========================================================================
+   Palette Swatches (Level Creator)
+   ========================================================================== */
 .palette-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
@@ -102,22 +163,24 @@ body {
 
 .palette-card {
   background: var(--bg-panel-alt);
-  border: 2px solid var(--border-retro);
+  border: 1px solid var(--border-retro);
   border-radius: 6px;
-  padding: 0.45rem 0.6rem;
+  padding: 0.5rem 0.65rem;
   cursor: pointer;
   text-align: left;
   color: var(--text-main);
-  transition: border-color 0.15s, transform 0.1s;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
 }
 
 .palette-card:hover {
   border-color: var(--accent-secondary);
+  background: #232b38;
 }
 
 .palette-card.active {
   border-color: var(--accent-primary);
-  background: #2a2f4c;
+  background: #252d3b;
+  box-shadow: 0 0 0 1px var(--accent-primary);
   transform: translateY(-1px);
 }
 
@@ -126,8 +189,8 @@ body {
   height: 12px;
   border-radius: 3px;
   overflow: hidden;
-  margin-bottom: 0.3rem;
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  margin-bottom: 0.35rem;
+  border: 1px solid rgba(0, 0, 0, 0.4);
 }
 
 .swatch-strip span {
@@ -135,26 +198,30 @@ body {
 }
 
 .palette-name {
+  font-family: var(--font-display);
   font-size: 0.78rem;
   font-weight: 600;
   display: block;
 }
 
-/* Sliders */
+/* ==========================================================================
+   Sliders & Parameter Controls
+   ========================================================================== */
 .slider-category-group {
   margin-bottom: 1.35rem;
   background: var(--bg-panel-alt);
-  padding: 0.9rem;
+  padding: 0.95rem;
   border-radius: 6px;
   border: 1px solid var(--border-retro);
 }
 
 .category-heading {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   color: var(--accent-primary);
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.85rem;
 }
 
 .slider-control {
@@ -169,21 +236,22 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
 }
 
 .slider-header label {
   font-size: 0.86rem;
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--text-main);
 }
 
 .slider-val-badge {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
   font-weight: 700;
-  background: #101320;
+  background: var(--bg-inset);
   color: var(--accent-secondary);
-  padding: 0.1rem 0.45rem;
+  padding: 0.12rem 0.5rem;
   border-radius: 4px;
   border: 1px solid var(--border-retro);
 }
@@ -200,6 +268,7 @@ input[type='range'] {
   font-size: 0.72rem;
   color: var(--text-muted);
   gap: 0.5rem;
+  margin-top: 0.2rem;
 }
 
 .slider-desc {
@@ -207,12 +276,12 @@ input[type='range'] {
   flex: 1;
 }
 
-/* Gift ratio bar */
+/* Lucky-Dip Drop Ratio Box */
 .gift-ratio-box {
   margin-top: 0.5rem;
   margin-bottom: 1.2rem;
-  padding: 0.65rem;
-  background: #141726;
+  padding: 0.75rem;
+  background: var(--bg-inset);
   border-radius: 6px;
   border: 1px dashed var(--border-retro);
 }
@@ -224,31 +293,34 @@ input[type='range'] {
 }
 
 .pill {
+  font-family: var(--font-display);
   font-size: 0.78rem;
   font-weight: 700;
-  padding: 0.2rem 0.55rem;
-  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
 }
 
 .pill.coin {
-  background: rgba(255, 215, 0, 0.18);
-  color: #ffd700;
-  border: 1px solid #ffd700;
+  background: rgba(212, 160, 23, 0.15);
+  color: #e6a817;
+  border: 1px solid rgba(212, 160, 23, 0.4);
 }
 
 .pill.life {
-  background: rgba(0, 230, 118, 0.18);
-  color: #00e676;
-  border: 1px solid #00e676;
+  background: rgba(46, 160, 108, 0.15);
+  color: #38b277;
+  border: 1px solid rgba(46, 160, 108, 0.4);
 }
 
 .pill.invinc {
-  background: rgba(255, 64, 129, 0.18);
-  color: #ff80ab;
-  border: 1px solid #ff4081;
+  background: rgba(217, 72, 95, 0.15);
+  color: #f08393;
+  border: 1px solid rgba(217, 72, 95, 0.4);
 }
 
-/* Preview Canvas Area */
+/* ==========================================================================
+   Preview Column & Canvas Viewport
+   ========================================================================== */
 .preview-column {
   display: flex;
   flex-direction: column;
@@ -272,11 +344,11 @@ input[type='range'] {
 }
 
 .seed-tag {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.9rem;
-  background: #101320;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  background: var(--bg-inset);
   padding: 0.35rem 0.7rem;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid var(--border-retro);
   color: var(--accent-primary);
 }
@@ -293,13 +365,18 @@ input[type='range'] {
   align-items: center;
   gap: 0.35rem;
   cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.toggle-group label:hover {
+  color: var(--text-main);
 }
 
 .canvas-scroll-viewport {
   width: 100%;
   overflow-x: auto;
-  background: #07080d;
-  border: 3px solid #2e3552;
+  background: #090c10;
+  border: 2px solid var(--border-retro);
   border-radius: 6px;
   padding: 0.5rem;
 }
@@ -323,16 +400,26 @@ input[type='range'] {
   font-size: 0.8rem;
   background: var(--bg-panel-alt);
   padding: 0.3rem 0.65rem;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid var(--border-retro);
+  color: var(--text-main);
 }
 
 .stat-chip.ok {
-  border-color: var(--accent-green);
-  color: var(--accent-green);
+  border-color: rgba(46, 160, 108, 0.45);
+  background: rgba(46, 160, 108, 0.12);
+  color: #38b277;
 }
 
-/* Form Elements */
+.stat-chip.warn {
+  border-color: rgba(217, 72, 95, 0.45);
+  background: rgba(217, 72, 95, 0.12);
+  color: #f08393;
+}
+
+/* ==========================================================================
+   Form Elements & Buttons
+   ========================================================================== */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -358,19 +445,21 @@ input[type='range'] {
 
 .form-field label {
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-muted);
 }
 
 .form-field input,
 .form-field select,
 .form-field textarea {
-  background: #101320;
+  background: var(--bg-inset);
   border: 1px solid var(--border-retro);
-  border-radius: 5px;
+  border-radius: 6px;
   color: var(--text-main);
   padding: 0.6rem 0.75rem;
+  font-family: var(--font-body);
   font-size: 0.92rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .form-field input:focus,
@@ -378,65 +467,117 @@ input[type='range'] {
 .form-field textarea:focus {
   outline: none;
   border-color: var(--accent-secondary);
+  box-shadow: 0 0 0 2px rgba(42, 157, 143, 0.25);
 }
 
+/* Button System: Clean geometric sans with modest corner radius */
 .btn {
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 0.65rem 1.2rem;
-  border-radius: 5px;
-  border: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 0.65rem 1.25rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.1s, opacity 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
 }
 
 .btn:active {
   transform: translateY(1px);
 }
 
+/* Primary CTA: Rich Amber Burnt Gold */
 .btn-primary {
   background: var(--accent-primary);
-  color: #111;
+  color: var(--accent-primary-text);
   font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
 }
 
+.btn-primary:hover {
+  background: var(--accent-primary-hover);
+  box-shadow: 0 3px 12px rgba(212, 160, 23, 0.22);
+}
+
+/* Secondary CTA: Muted Vintage Teal */
 .btn-secondary {
   background: var(--accent-secondary);
-  color: #0b0e17;
-  font-size: 0.85rem;
+  color: var(--accent-secondary-text);
+  font-size: 0.88rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
 }
 
+.btn-secondary:hover {
+  background: var(--accent-secondary-hover);
+  box-shadow: 0 3px 10px rgba(42, 157, 143, 0.22);
+}
+
+/* Success / Approve Button */
+.btn-success {
+  background: var(--accent-green);
+  color: #08140e;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+}
+
+.btn-success:hover {
+  background: var(--accent-green-hover);
+  box-shadow: 0 3px 10px rgba(46, 160, 108, 0.25);
+}
+
+/* Danger / Decline Button */
+.btn-danger {
+  background: var(--accent-danger);
+  color: #ffffff;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+}
+
+.btn-danger:hover {
+  background: var(--accent-danger-hover);
+  box-shadow: 0 3px 10px rgba(217, 72, 95, 0.25);
+}
+
+/* ==========================================================================
+   Feedback Banners & Notifications
+   ========================================================================== */
 .feedback-banner {
   padding: 0.75rem 1rem;
   border-radius: 6px;
   margin-bottom: 1rem;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .feedback-banner.error {
-  background: rgba(255, 64, 129, 0.18);
-  border: 1px solid var(--accent-danger);
-  color: #ff80ab;
+  background: rgba(217, 72, 95, 0.12);
+  border: 1px solid rgba(217, 72, 95, 0.45);
+  color: #f08393;
 }
 
 .feedback-banner.success {
-  background: rgba(0, 230, 118, 0.18);
-  border: 1px solid var(--accent-green);
-  color: var(--accent-green);
+  background: rgba(46, 160, 108, 0.12);
+  border: 1px solid rgba(46, 160, 108, 0.45);
+  color: #38b277;
 }
 
-/* Modal */
+/* ==========================================================================
+   Modals & Unique Link Boxes
+   ========================================================================== */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(5, 7, 15, 0.82);
+  background: rgba(8, 10, 16, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
   z-index: 1000;
+  backdrop-filter: blur(2px);
 }
 
 .modal-backdrop[hidden] {
@@ -445,30 +586,34 @@ input[type='range'] {
 
 .modal-card {
   background: var(--bg-panel);
-  border: 2px solid var(--accent-primary);
+  border: 1px solid var(--accent-primary);
   border-radius: 8px;
   max-width: 560px;
   width: 100%;
   padding: 1.6rem;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
 }
 
 .unique-link-box {
-  background: #0d101b;
+  background: var(--bg-inset);
   border: 1px solid var(--border-retro);
-  padding: 0.8rem;
-  border-radius: 5px;
+  padding: 0.85rem;
+  border-radius: 6px;
   margin: 1rem 0;
   word-break: break-all;
 }
 
 .unique-link-box a {
   color: var(--accent-secondary);
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-mono);
   font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: underline;
 }
 
-/* Status Page Specifics */
+/* ==========================================================================
+   Status Page & Status Badges
+   ========================================================================== */
 .status-container {
   max-width: 1180px;
   margin: 2rem auto;
@@ -478,43 +623,34 @@ input[type='range'] {
 .status-pill {
   display: inline-block;
   padding: 0.3rem 0.85rem;
-  border-radius: 99px;
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: 800;
-  font-size: 0.9rem;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.4px;
 }
 
 .status-pending {
-  background: rgba(255, 204, 0, 0.2);
-  color: var(--accent-primary);
-  border: 1px solid var(--accent-primary);
+  background: rgba(212, 160, 23, 0.15);
+  color: #e6a817;
+  border: 1px solid rgba(212, 160, 23, 0.45);
 }
 
 .status-approved {
-  background: rgba(0, 230, 118, 0.2);
-  color: var(--accent-green);
-  border: 1px solid var(--accent-green);
+  background: rgba(46, 160, 108, 0.15);
+  color: #38b277;
+  border: 1px solid rgba(46, 160, 108, 0.45);
 }
 
 .status-declined {
-  background: rgba(255, 64, 129, 0.2);
-  color: #ff80ab;
-  border: 1px solid var(--accent-danger);
+  background: rgba(217, 72, 95, 0.15);
+  color: #f08393;
+  border: 1px solid rgba(217, 72, 95, 0.45);
 }
 
-/* Admin Moderation Interface */
-.btn-success {
-  background: var(--accent-green);
-  color: #08120c;
-  font-size: 0.9rem;
-}
-
-.btn-danger {
-  background: var(--accent-danger);
-  color: #fff;
-  font-size: 0.9rem;
-}
-
+/* ==========================================================================
+   Admin Moderation Interface
+   ========================================================================== */
 .admin-login-wrapper {
   max-width: 480px;
   margin: 4rem auto;
@@ -530,20 +666,28 @@ input[type='range'] {
 
 .admin-tab-btn {
   background: var(--bg-panel-alt);
-  border: 2px solid var(--border-retro);
+  border: 1px solid var(--border-retro);
   color: var(--text-muted);
   padding: 0.45rem 0.85rem;
   border-radius: 6px;
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: 700;
-  font-size: 0.82rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.84rem;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-tab-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-main);
+  background: #242c38;
 }
 
 .admin-tab-btn.active {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
-  background: #282d46;
+  background: rgba(212, 160, 23, 0.12);
+  box-shadow: inset 0 -2px 0 var(--accent-primary);
 }
 
 .queue-list {
@@ -557,20 +701,22 @@ input[type='range'] {
 
 .queue-item-card {
   background: var(--bg-panel-alt);
-  border: 2px solid var(--border-retro);
+  border: 1px solid var(--border-retro);
   border-radius: 6px;
   padding: 0.75rem 0.9rem;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
 }
 
 .queue-item-card:hover {
   border-color: var(--accent-secondary);
+  background: #232a35;
 }
 
 .queue-item-card.active {
   border-color: var(--accent-primary);
-  background: #292f4c;
+  background: #252d3b;
+  box-shadow: inset 3px 0 0 var(--accent-primary);
 }
 
 .queue-item-header {
@@ -582,7 +728,8 @@ input[type='range'] {
 }
 
 .queue-item-title {
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: 0.95rem;
   color: var(--text-main);
 }
@@ -602,22 +749,23 @@ input[type='range'] {
   align-items: center;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-retro);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .log-list {
   max-height: 240px;
   overflow-y: auto;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-mono);
   font-size: 0.78rem;
-  background: #0b0d16;
+  background: var(--bg-inset);
   border: 1px solid var(--border-retro);
   border-radius: 6px;
   padding: 0.75rem;
+  color: var(--text-muted);
 }
 
 .log-entry {
-  padding: 0.3rem 0;
+  padding: 0.35rem 0;
   border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
 }
 
@@ -625,7 +773,9 @@ input[type='range'] {
   border-bottom: none;
 }
 
-/* Landing Homepage & Playable Level Browser & Gameplay Arena */
+/* ==========================================================================
+   Landing Homepage & Playable Level Browser
+   ========================================================================== */
 .landing-container {
   max-width: 1440px;
   margin: 1.5rem auto;
@@ -633,35 +783,42 @@ input[type='range'] {
 }
 
 .hero-welcome-panel {
-  background: linear-gradient(135deg, #1b1f36 0%, #241934 100%);
-  border: 2px solid var(--accent-primary);
-  padding: 2rem;
+  background: linear-gradient(145deg, #181d26 0%, #1e1d29 100%);
+  border: 1px solid rgba(212, 160, 23, 0.35);
+  padding: 2.2rem;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
 }
 
 .retro-tag {
   display: inline-block;
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: 0.78rem;
-  color: #111;
+  color: #081312;
   background: var(--accent-secondary);
-  padding: 0.2rem 0.65rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 4px;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.6px;
 }
 
 .hero-headline {
-  font-size: 2rem;
+  font-size: 2.1rem;
   color: var(--accent-primary);
-  font-family: 'Courier New', Courier, monospace;
-  margin-bottom: 0.65rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+  margin-bottom: 0.75rem;
 }
 
 .hero-description {
   font-size: 1rem;
   color: var(--text-main);
   max-width: 820px;
-  margin-bottom: 1.4rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
 }
 
 .hero-cta-group {
@@ -698,27 +855,33 @@ input[type='range'] {
 .level-browser-card {
   display: flex;
   flex-direction: column;
-  transition: transform 0.12s, border-color 0.15s;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .level-browser-card:hover {
   border-color: var(--accent-primary);
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
 }
 
 .level-card-title {
   font-size: 1.15rem;
+  font-weight: 600;
   color: var(--accent-primary);
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-display);
+  letter-spacing: 0.2px;
 }
 
 .level-card-desc {
   font-size: 0.88rem;
   color: var(--text-muted);
   margin: 0.45rem 0 0.75rem;
+  line-height: 1.5;
 }
 
-/* Gameplay Arena */
+/* ==========================================================================
+   Gameplay Arena & Retro HUD
+   ========================================================================== */
 .gameplay-arena-wrapper {
   max-width: 1440px;
   margin: 1.5rem auto;
@@ -741,28 +904,32 @@ input[type='range'] {
 }
 
 .hud-box {
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: 800;
-  font-size: 0.95rem;
-  background: #0d101b;
-  border: 2px solid var(--border-retro);
-  padding: 0.35rem 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9rem;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-retro);
+  padding: 0.4rem 0.8rem;
   border-radius: 6px;
   color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .hud-box.invinc-active {
   border-color: var(--accent-danger);
-  color: #ff80ab;
-  background: rgba(255, 64, 129, 0.18);
+  color: #f08393;
+  background: rgba(217, 72, 95, 0.15);
+  box-shadow: 0 0 10px rgba(217, 72, 95, 0.25);
 }
 
 .game-viewport-frame {
   position: relative;
   display: flex;
   justify-content: center;
-  background: #05060a;
-  border: 3px solid var(--accent-secondary);
+  background: #090c10;
+  border: 2px solid var(--border-retro);
   border-radius: 8px;
   padding: 0.75rem;
   overflow: hidden;
@@ -776,27 +943,29 @@ input[type='range'] {
   aspect-ratio: 4 / 3;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  border: 2px solid #222842;
+  border: 1px solid var(--border-retro);
 }
 
 .game-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(8, 10, 18, 0.85);
+  background: rgba(8, 10, 16, 0.88);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  backdrop-filter: blur(2px);
 }
 
 .game-overlay-card {
   background: var(--bg-panel);
-  border: 2px solid var(--accent-primary);
+  border: 1px solid var(--accent-primary);
   border-radius: 8px;
   padding: 1.75rem;
   text-align: center;
   max-width: 460px;
   width: 100%;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
 }
 
 .controls-bar {
@@ -817,5 +986,3 @@ input[type='range'] {
   font-size: 0.83rem;
   color: var(--text-muted);
 }
-
-
